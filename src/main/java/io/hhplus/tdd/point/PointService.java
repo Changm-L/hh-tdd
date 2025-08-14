@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import io.hhplus.tdd.database.PointHistoryTable;
 import io.hhplus.tdd.database.UserPointTable;
+import io.hhplus.tdd.point.constant.TransactionType;
 import io.hhplus.tdd.point.dto.request.ChargeRequest;
 import io.hhplus.tdd.point.dto.request.UseRequest;
 import io.hhplus.tdd.point.dto.response.PointHistory;
@@ -30,6 +31,7 @@ public class PointService {
     }
 
     public UserPoint chargeByUserId(long userId, ChargeRequest request) {
+        pointHistoryTable.insert(userId, request.amount(), TransactionType.CHARGE, System.currentTimeMillis());
         return userPointTable.insertOrUpdate(userId, request.amount());
     }
 
@@ -40,7 +42,9 @@ public class PointService {
             throw new InsufficientPointException();
         }
 
-        return userPointTable.insertOrUpdate(userId, request.amount());
+        pointHistoryTable.insert(userId, request.amount(), TransactionType.USE, System.currentTimeMillis());
+
+        return userPointTable.insertOrUpdate(userId, userPoint.point() - request.amount());
     }
 
 }
