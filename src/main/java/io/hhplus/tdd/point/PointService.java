@@ -31,8 +31,11 @@ public class PointService {
     }
 
     public UserPoint chargeByUserId(long userId, ChargeRequest request) {
+        UserPoint userPoint = userPointTable.selectById(userId);
+        long chargedAmount = userPoint.point() + request.amount();
+
         pointHistoryTable.insert(userId, request.amount(), TransactionType.CHARGE, System.currentTimeMillis());
-        return userPointTable.insertOrUpdate(userId, request.amount());
+        return userPointTable.insertOrUpdate(userId, chargedAmount);
     }
 
     public UserPoint usePointByUserId(long userId, UseRequest request) {
