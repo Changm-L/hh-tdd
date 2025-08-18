@@ -9,18 +9,28 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 import io.hhplus.tdd._core.exception.BadRequestException;
+import io.hhplus.tdd.point.exception.PointException;
 
 @RestControllerAdvice
 class ApiControllerAdvice {
 
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ErrorResponse> handleBadRequestException(BadRequestException e) {
-        return ResponseEntity.status(e.status.value()).body(
-                new ErrorResponse(
-                        String.valueOf(e.status.value()),
-                        "잘못된 요청입니다."
-                )
-        );
+        return ResponseEntity.status(e.status.value())
+                             .body(
+                                     new ErrorResponse(
+                                             String.valueOf(e.status.value()),
+                                             "잘못된 요청입니다."
+                                     )
+                             );
+    }
+
+    @ExceptionHandler(PointException.class)
+    public ResponseEntity<ErrorResponse> handlePointException(PointException e) {
+        return ResponseEntity.status(e.getHttpStatus())
+                             .body(
+                                     new ErrorResponse(String.valueOf(e.getHttpStatus()), e.getMessage())
+                             );
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
