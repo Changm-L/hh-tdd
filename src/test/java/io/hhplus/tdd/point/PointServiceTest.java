@@ -133,16 +133,16 @@ class PointServiceTest {
     class chargeByUserId {
         @Test
         void 유저가_존재하는_경우_포인트를_충전한다() {
-            /**
-             * [작성 이유]: 유저가
-             */
-
             //given
             long userId = 1L;
             long amount = 100L;
             ChargeRequest request = new ChargeRequest(amount);
-            UserPoint expected = new UserPoint(userId, request.amount(), System.currentTimeMillis());
-            when(userPointTable.insertOrUpdate(userId, request.amount())).thenReturn(expected);
+            UserPoint selectedUSerPoint = new UserPoint(userId, amount, System.currentTimeMillis());
+            when(userPointTable.selectById(userId)).thenReturn(selectedUSerPoint);
+            
+            long chargedAmount = request.amount() + amount;
+            UserPoint expected = new UserPoint(userId, chargedAmount, System.currentTimeMillis());
+            when(userPointTable.insertOrUpdate(userId, chargedAmount)).thenReturn(expected);
 
             //when
             UserPoint result = pointService.chargeByUserId(userId, request);
